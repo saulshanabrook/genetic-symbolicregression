@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/saulshanabrook/genetic-symbolicregression.png?branch=master)](https://travis-ci.org/saulshanabrook/genetic-symbolicregression)
+
 # `genetic-symbolicregression`
 
 Framework for 

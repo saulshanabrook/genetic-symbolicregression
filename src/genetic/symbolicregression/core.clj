@@ -4,7 +4,7 @@
   from https://github.com/lspector/gp/blob/master/src/gp/evolvefn.clj"
   (:require
     [genetic.core :as genetic]
-    [genetic.contrib.symbolicregression.evolvefn :as evolvefn]))
+    [genetic.symbolicregression.evolvefn :as evolvefn]))
 
 (defn fit
   [source-data]
