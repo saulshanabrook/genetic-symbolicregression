@@ -77,7 +77,7 @@
 ;; corresponding y values.
 
 (defn error
-  [individual tar]
+  [individual target-data]
   (let [value-function (eval (list 'fn '[x] individual))]
     (reduce + (map (fn [[x y]]
                      (Math/abs
@@ -145,80 +145,3 @@
 ; and crossovers with:
 ; (let [i (random-code 2) j (random-code 2)]
 ;   (println (crossover i j) "from" i "and" j))
-
-;(let [e '(* x 2)
-;      m (mutate e)]
-; (println (error e) e)
-; (println (error m) m))
-;
-;(let [e1 '(* x 2)
-;      e2 '(+ (* x 3) 4)
-;      c (crossover e1 e2)]
-; (println (error e1) e1)
-; (println (error e2) e2)
-; (println (error c) c))
-
-;; We'll also want a way to sort a population by error that doesn't require
-;; lots of error re-computation:
-
-(defn sort-by-error
-  [population]
-  (vec (map second
-            (sort (fn [[err1 ind1] [err2 ind2]] (< err1 err2))
-                  (map #(vector (error %) %) population)))))
-
-;; Finally, we'll define a function to select an individual from a sorted
-;; population using tournaments of a given size.
-
-(defn select
-  [population tournament-size]
-  (let [size (count population)]
-    (nth population
-         (apply min (repeatedly tournament-size #(rand-int size))))))
-
-;; Now we can evolve a solution by starting with a random population and
-;; repeatedly sorting, checking for a solution, and producing a new
-;; population.
-
-(defn evolve
-  [popsize]
-  (println "Starting evolution...")
-  (loop [generation 0
-         population (sort-by-error (repeatedly popsize #(random-code 4)))]
-    (let [best (first population)
-          best-error (error best)]
-      (println "======================")
-      (println "Generation:" generation)
-      (println "Best error:" best-error)
-      (println "Best program:" best)
-      (println "     Median error:" (error (nth population
-                                                (int (/ popsize 2)))))
-      (println "     Average program size:"
-               (float (/ (reduce + (map count (map flatten population)))
-                         (count population))))
-      (if (< best-error 0.1) ;; good enough to count as success
-        (println "Success:" best)
-        (recur
-          (inc generation)
-          (sort-by-error
-            (concat
-              (repeatedly (* 1/2 popsize) #(mutate (select population 7)))
-              (repeatedly (* 1/4 popsize) #(crossover (select population 7)
-                                                     (select population 7)))
-              (repeatedly (* 1/4 popsize) #(select population 7)))))))))
-
-
-;; Run it with a population of 1000:
-
-;(evolve 1000)
-
-;; Exercises:
-;; - Remove the numerical constants and see how this affects problem-solving
-;;   performance.
-;; - Add the "inc" function (arity 1) and see how this affects problem-solving
-;;   performance.
-;; - Run this on a different data set of your own choosing.
-;; - Replace various hard-coded parameters with variables or arguments to
-;;   allow for easier experimentation with different parameter sets.
-;; - Add additional functions of various arities to the function set and see
-;;   how this affects problem-solving performance.
